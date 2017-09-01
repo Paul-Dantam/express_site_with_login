@@ -1,24 +1,13 @@
 const express = require("express");
-const Router = express.Router();
+const indexRoutes = express.Router();
+const users = require("../data");
 
-indexRoutes.get((req, res) => {
-  let reqUsername = req.body.username;
-  let reqPassword = req.body.password;
-
-  let foundUser = users.find(user => user.username === reqUsername);
-  if (!foundUser) {
-    return res.render("login", { errors: ["Please Log in"] });
-  }
-
-  if (foundUser.password === reqPassword) {
-    delete foundUser.password;
-    req.session.user = foundUser;
-    res.redirect("/");
+indexRoutes.get("/", (req, res) => {
+  if (!req.user) {
+    res.redirect("/auth/login");
   } else {
-    return res.render("login", { errors: ["Password does not match."] });
+    res.render("home", { user: req.user });
   }
-
-  res.render("home");
 });
 
 module.exports = indexRoutes;

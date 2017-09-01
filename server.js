@@ -6,46 +6,28 @@ const mustacheExpress = require("mustache-express");
 const path = require("path");
 const users = require("./data");
 const checkAuth = require("./middlewares/checkAuth");
+const userParser = require("./middlewares/userParser");
 const sessionConfig = require("./sessionConfig");
-const indexRoutes = require("./routes/indexRoutes")
-const app = expresss();
-
+const indexRoutes = require("./routes/indexRoutes");
+const authRoutes = require("./routes/authRoutes");
+const userRoutes = require("./routes/userRoutes");
+const app = express();
 const port = process.env.PORT || 8000;
 
 app.engine("mustache", mustacheExpress());
-app.use("views", "./views");
-app.use("view engine", "mustache");
+app.set("views", "./views");
+app.set("view engine", "mustache");
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use(logger("dev"));
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(session(sessionConfig));(
-app.us("/", indexRoutes)
+app.use(session(sessionConfig));
+app.use(userParser);
 
-app.get("/", (req, res) => {
-  let reqUsername = req.body.username;
-  let reqPassword = req.body.password;
-
-  let foundUser = users.find(user => user.username === reqUsername);
-  if (!foundUser) {
-    return res.render("login", { errors: ["Please Log in"] });
-  }
-
-  if (foundUser.password === reqPassword) {
-    delete foundUser.password;
-    req.session.user = foundUser;
-    res.redirect("/");
-  } else {
-    return res.render("login", { errors: ["Password does not match."] });
-  }
-
-  res.render("home");
-});
-
-app.post("/signup", (req, res) => {
-  users.push(req.body);
-  res.redirect("/login");
-});
+//routes
+app.use("/", indexRoutes);
+app.use("/auth", authRoutes);
+app.use("/user", checkAuth, userRoutes);
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}.`);

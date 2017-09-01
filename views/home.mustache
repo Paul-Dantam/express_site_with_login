@@ -6,16 +6,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
+    <link rel="stylesheet" href="/css/main.css">
+
 </head>
+
+{{#user}}
 
 <body>
 
-    <h1>Hello {{user.name}}, Welcome to the home page.</h1>
+    <h1>Hello {{user.name}}, Welcome to your home page.</h1>
+
+
+    <nav class="controls"><a href="/user/logout" class="logout">Logout</a></nav>
 
     <p>Name: {{user.name}}</p>
     <p>Username: {{user.username}}</p>
     <p>Email: {{user.email}}</p>
 
 </body>
+
+{{/user}} {{^user}} you are not logged in!! {{/user}}
 
 </html>
